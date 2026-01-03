@@ -44,12 +44,12 @@ export function Hero() {
 
     return (
         <section
-            className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white px-6 py-24 md:py-32 selection:bg-[#3B5998]/20 selection:text-[#3B5998]"
+            className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white px-4 sm:px-6 py-20 sm:py-24 md:py-32 selection:bg-[#3B5998]/20 selection:text-[#3B5998]"
             onMouseMove={handleMouseMove}
         >
-            {/* Interactive Mouse Spotlight */}
+            {/* Interactive Mouse Spotlight - Desktop only */}
             <motion.div
-                className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300 opacity-0 hover:opacity-100"
+                className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300 opacity-0 hover:opacity-100 hidden md:block"
                 style={{
                     background: `radial-gradient(600px circle at ${smoothMouseX}px ${smoothMouseY}px, rgba(59, 89, 152, 0.06), transparent 40%)`,
                 }}
@@ -93,7 +93,7 @@ export function Hero() {
 
 
             {/* Corner Brackets - Minimal */}
-            <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 pointer-events-none hidden sm:block">
                 {/* Top Left */}
                 <div className="absolute top-8 left-8 w-16 h-16 border-l border-t border-[#3B5998]/25" />
 
@@ -111,22 +111,21 @@ export function Hero() {
 
             {/* Main Content Container with Subtle Border */}
             <div className="relative z-10 max-w-5xl w-full">
-                <div className="absolute inset-0 rounded-xl border border-[#3B5998]/12 bg-white/40 backdrop-blur-sm" />
+                <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-[#3B5998]/12 bg-white/40 backdrop-blur-sm" />
 
                 <div
                     className={cn(
-                        "relative space-y-12 p-8 md:p-12 transition-all duration-700 ease-[0.16,1,0.3,1]",
+                        "relative space-y-8 sm:space-y-10 md:space-y-12 p-6 sm:p-8 md:p-12 transition-all duration-700 ease-[0.16,1,0.3,1]",
                         isFocused ? "blur-[2px] opacity-40 scale-[0.99]" : "blur-0 opacity-100 scale-100"
                     )}
                 >
                     {/* Main Value Prop */}
-                    <div className="text-center space-y-8 pt-6">
+                    <div className="text-center space-y-6 sm:space-y-8 pt-4 sm:pt-6">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        // Added font-serif
-                        className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-sans font-light tracking-tight text-black leading-[0.95] px-4"
+                        className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-sans font-light tracking-tight text-black leading-[1.1] sm:leading-[0.95]"
                     >
                         The operating system <br className="hidden sm:block" /> for public strategy.
                     </motion.h1>
@@ -135,7 +134,7 @@ export function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-base md:text-lg lg:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-light space-y-2 px-4"
+                        className="text-sm sm:text-base md:text-lg lg:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-light space-y-2"
                     >
                         <p>Turn consulting deliverables into auditable, software-driven analysis.</p>
                         <p>Deployed securely in <strong className="font-semibold text-neutral-800">your environment</strong>.</p>
@@ -147,15 +146,15 @@ export function Hero() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1, delay: 0.6 }}
-                    className="mx-auto max-w-lg pt-4"
+                    className="mx-auto max-w-lg pt-2 sm:pt-4"
                 >
                     <div
-                        className="flex flex-col items-center text-center space-y-4 group cursor-help"
+                        className="flex flex-col items-center text-center space-y-3 sm:space-y-4 group cursor-help"
                         onMouseEnter={() => { setIsGraphHovered(true); graphProgress.set(1); }}
                         onMouseLeave={() => { setIsGraphHovered(false); graphProgress.set(0); }}
                     >
                         {/* Decorative "Asymptote" Line Graph */}
-                        <div className="h-12 w-32 relative overflow-hidden opacity-50 transition-opacity group-hover:opacity-100">
+                        <div className="h-10 w-28 sm:h-12 sm:w-32 relative overflow-hidden opacity-50 transition-opacity group-hover:opacity-100">
                             <svg viewBox="0 0 100 40" className="w-full h-full vector-effect-non-scaling-stroke">
                                 <line x1="0" y1="40" x2="100" y2="40" stroke="#eee" strokeWidth="1" />
                                 <line x1="0" y1="0" x2="0" y2="40" stroke="#eee" strokeWidth="1" />
@@ -179,18 +178,18 @@ export function Hero() {
                             </svg>
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="space-y-1 px-2">
                             <div className="flex items-center justify-center gap-2">
-                                <span className="font-mono text-[10px] uppercase tracking-widest text-neutral-400">Amdahl&apos;s Law</span>
+                                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-neutral-400">Amdahl&apos;s Law</span>
                             </div>
 
-                            <p className="font-sans text-base text-neutral-700 transition-colors leading-relaxed">
+                            <p className="font-sans text-sm sm:text-base text-neutral-700 transition-colors leading-relaxed">
                                 &ldquo;The overall speedup of a system is limited by the time needed for the <span className={cn("transition-all underline decoration-neutral-200 underline-offset-4", isGraphHovered ? "bg-[#3B5998]/10 decoration-[#3B5998] text-[#3B5998]" : "")}>serial fraction</span> of the task.&rdquo;
                             </p>
                         </div>
 
                         <motion.p
-                            className="text-xs text-neutral-400 max-w-xs"
+                            className="text-[11px] sm:text-xs text-neutral-400 max-w-xs px-2"
                             animate={{ opacity: isGraphHovered ? 1 : 0.7 }}
                         >
                             We automate the serial part of government work.
@@ -203,7 +202,7 @@ export function Hero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.8 }}
-                    className="border-t border-[#3B5998]/10 pt-8 mt-8"
+                    className="border-t border-[#3B5998]/10 pt-6 sm:pt-8 mt-6 sm:mt-8"
                 >
                     <form onSubmit={handleSubmit} className="max-w-md mx-auto">
                         <div className="relative group/input">
@@ -215,7 +214,7 @@ export function Hero() {
                                 onFocus={() => setIsFocused(true)}
                                 onBlur={() => setIsFocused(false)}
                                 disabled={status === "success" || status === "loading"}
-                                className="w-full bg-transparent border-b-2 border-neutral-200 py-3 px-1 text-black placeholder:text-neutral-400 focus:outline-none focus:border-[#3B5998] transition-all duration-300 font-mono text-sm disabled:opacity-50"
+                                className="w-full bg-transparent border-b-2 border-neutral-200 py-3 px-1 text-black placeholder:text-neutral-400 focus:outline-none focus:border-[#3B5998] transition-all duration-300 font-mono text-xs sm:text-sm disabled:opacity-50"
                             />
                             <button
                                 type="submit"
@@ -236,7 +235,7 @@ export function Hero() {
                             <motion.p
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-xs text-red-500 mt-2 font-mono"
+                                className="text-[11px] sm:text-xs text-red-500 mt-2 font-mono"
                             >
                                 Error. Please try again.
                             </motion.p>
@@ -245,7 +244,7 @@ export function Hero() {
                             <motion.p
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-xs text-[#3B5998] mt-2 font-mono"
+                                className="text-[11px] sm:text-xs text-[#3B5998] mt-2 font-mono"
                             >
                                 Added to waitlist.
                             </motion.p>
