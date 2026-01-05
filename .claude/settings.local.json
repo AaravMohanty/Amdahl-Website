@@ -4,7 +4,12 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(where:*)",
+      "Bash(copy \"public\\\\logo.png\" \"src\\\\app\\\\icon.png\")",
+      "Bash(del \"src\\\\app\\\\favicon.ico\")",
+      "Bash(cp:*)",
+      "Bash(rm:*)"
     ]
   }
 }

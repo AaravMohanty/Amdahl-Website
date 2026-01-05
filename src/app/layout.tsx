@@ -23,9 +23,6 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   title: "Amdahl | AI-Native Strategy Workflows",
   description: "Auditable, high-precision strategy workflows for government.",
-  icons: {
-    icon: "/favicon.ico", // Placeholder
-  },
 };
 
 export default function RootLayout({
