@@ -121,137 +121,153 @@ export function Hero() {
                 >
                     {/* Main Value Prop */}
                     <div className="text-center space-y-6 sm:space-y-8 pt-4 sm:pt-6">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-sans font-light tracking-tight text-black leading-[1.1] sm:leading-[0.95]"
-                    >
-                        The operating system <br className="hidden sm:block" /> for public strategy.
-                    </motion.h1>
 
+                        {/* Launching Soon */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.8, delay: 0.1 }}
+                            className="flex items-center justify-center gap-4 sm:gap-6"
+                        >
+                            <div className="h-px w-8 sm:w-16 md:w-24 bg-gradient-to-r from-transparent via-neutral-300 to-neutral-300" />
+                            <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.25em] uppercase text-neutral-500">
+                                Launching Soon
+                            </span>
+                            <div className="h-px w-8 sm:w-16 md:w-24 bg-gradient-to-l from-transparent via-neutral-300 to-neutral-300" />
+                        </motion.div>
+
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-sans font-light tracking-tight text-black leading-[1.1] sm:leading-[0.95]"
+                        >
+                            The operating system <br className="hidden sm:block" /> for public strategy.
+                        </motion.h1>
+
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                            className="text-sm sm:text-base md:text-lg lg:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-light space-y-2"
+                        >
+                            <p>Turn consulting deliverables into auditable, software-driven analysis.</p>
+                            <p>Deployed securely in <strong className="font-semibold text-neutral-800">your environment</strong>.</p>
+                        </motion.div>
+                    </div>
+
+                    {/* Amdahl's Law Visualization & Definition */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1, delay: 0.6 }}
+                        className="mx-auto max-w-lg pt-2 sm:pt-4"
+                    >
+                        <div
+                            className="flex flex-col items-center text-center space-y-3 sm:space-y-4 group cursor-help"
+                            onMouseEnter={() => { setIsGraphHovered(true); graphProgress.set(1); }}
+                            onMouseLeave={() => { setIsGraphHovered(false); graphProgress.set(0); }}
+                        >
+                            {/* Decorative "Asymptote" Line Graph */}
+                            <div className="h-10 w-28 sm:h-12 sm:w-32 relative overflow-hidden opacity-50 transition-opacity group-hover:opacity-100">
+                                <svg viewBox="0 0 100 40" className="w-full h-full vector-effect-non-scaling-stroke">
+                                    <line x1="0" y1="40" x2="100" y2="40" stroke="#eee" strokeWidth="1" />
+                                    <line x1="0" y1="0" x2="0" y2="40" stroke="#eee" strokeWidth="1" />
+                                    <motion.path
+                                        d="M 0 40 Q 30 40 50 20 T 100 5"
+                                        fill="none"
+                                        stroke={isGraphHovered ? "#3B5998" : "#999"}
+                                        strokeWidth="1.5"
+                                        initial={{ pathLength: 0 }}
+                                        animate={{ pathLength: 1 }}
+                                        transition={{ duration: 2, ease: "easeOut" }}
+                                    />
+                                    <motion.line
+                                        x1="0" y1="5" x2="100" y2="5"
+                                        stroke="#3B5998"
+                                        strokeWidth="0.5"
+                                        strokeDasharray="2 2"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: isGraphHovered ? 1 : 0 }}
+                                    />
+                                </svg>
+                            </div>
+
+                            <div className="space-y-1 px-2">
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-neutral-400">Amdahl&apos;s Law</span>
+                                </div>
+
+                                <p className="font-sans text-sm sm:text-base text-neutral-700 transition-colors leading-relaxed">
+                                    &ldquo;The overall speedup of a system is limited by the time needed for the <span className={cn("transition-all underline decoration-neutral-200 underline-offset-4", isGraphHovered ? "bg-[#3B5998]/10 decoration-[#3B5998] text-[#3B5998]" : "")}>serial fraction</span> of the task.&rdquo;
+                                </p>
+                            </div>
+
+                            <motion.p
+                                className="text-[11px] sm:text-xs text-neutral-400 max-w-xs px-2"
+                                animate={{ opacity: isGraphHovered ? 1 : 0.7 }}
+                            >
+                                We automate the serial part of government work.
+                            </motion.p>
+                        </div>
+                    </motion.div>
+
+                    {/* Waitlist Input - Integrated */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-sm sm:text-base md:text-lg lg:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-light space-y-2"
+                        transition={{ duration: 0.8, delay: 0.8 }}
+                        className="border-t border-[#3B5998]/10 pt-6 sm:pt-8 mt-6 sm:mt-8"
                     >
-                        <p>Turn consulting deliverables into auditable, software-driven analysis.</p>
-                        <p>Deployed securely in <strong className="font-semibold text-neutral-800">your environment</strong>.</p>
+                        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+                            <div className="relative group/input">
+                                <input
+                                    type="email"
+                                    placeholder="name@agency.gov"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    onFocus={() => setIsFocused(true)}
+                                    onBlur={() => setIsFocused(false)}
+                                    disabled={status === "success" || status === "loading"}
+                                    className="w-full bg-transparent border-b-2 border-neutral-200 py-3 px-1 text-black placeholder:text-neutral-400 focus:outline-none focus:border-[#3B5998] transition-all duration-300 font-mono text-xs sm:text-sm disabled:opacity-50"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={status === "success" || status === "loading" || !email}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 text-[#3B5998] disabled:opacity-30 transition-all duration-300"
+                                    aria-label="Submit email"
+                                >
+                                    {status === "loading" ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : status === "success" ? (
+                                        <span className="text-xs font-mono text-[#3B5998]">✓</span>
+                                    ) : (
+                                        <ArrowRight className="w-4 h-4 opacity-50 group-hover/input:opacity-100 group-hover/input:translate-x-0.5 transition-all" />
+                                    )}
+                                </button>
+                            </div>
+                            {status === "error" && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-[11px] sm:text-xs text-red-500 mt-2 font-mono"
+                                >
+                                    Error. Please try again.
+                                </motion.p>
+                            )}
+                            {status === "success" && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-[11px] sm:text-xs text-[#3B5998] mt-2 font-mono"
+                                >
+                                    Added to waitlist.
+                                </motion.p>
+                            )}
+                        </form>
                     </motion.div>
                 </div>
-
-                {/* Amdahl's Law Visualization & Definition */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1, delay: 0.6 }}
-                    className="mx-auto max-w-lg pt-2 sm:pt-4"
-                >
-                    <div
-                        className="flex flex-col items-center text-center space-y-3 sm:space-y-4 group cursor-help"
-                        onMouseEnter={() => { setIsGraphHovered(true); graphProgress.set(1); }}
-                        onMouseLeave={() => { setIsGraphHovered(false); graphProgress.set(0); }}
-                    >
-                        {/* Decorative "Asymptote" Line Graph */}
-                        <div className="h-10 w-28 sm:h-12 sm:w-32 relative overflow-hidden opacity-50 transition-opacity group-hover:opacity-100">
-                            <svg viewBox="0 0 100 40" className="w-full h-full vector-effect-non-scaling-stroke">
-                                <line x1="0" y1="40" x2="100" y2="40" stroke="#eee" strokeWidth="1" />
-                                <line x1="0" y1="0" x2="0" y2="40" stroke="#eee" strokeWidth="1" />
-                                <motion.path
-                                    d="M 0 40 Q 30 40 50 20 T 100 5"
-                                    fill="none"
-                                    stroke={isGraphHovered ? "#3B5998" : "#999"}
-                                    strokeWidth="1.5"
-                                    initial={{ pathLength: 0 }}
-                                    animate={{ pathLength: 1 }}
-                                    transition={{ duration: 2, ease: "easeOut" }}
-                                />
-                                <motion.line
-                                    x1="0" y1="5" x2="100" y2="5"
-                                    stroke="#3B5998"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="2 2"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: isGraphHovered ? 1 : 0 }}
-                                />
-                            </svg>
-                        </div>
-
-                        <div className="space-y-1 px-2">
-                            <div className="flex items-center justify-center gap-2">
-                                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-neutral-400">Amdahl&apos;s Law</span>
-                            </div>
-
-                            <p className="font-sans text-sm sm:text-base text-neutral-700 transition-colors leading-relaxed">
-                                &ldquo;The overall speedup of a system is limited by the time needed for the <span className={cn("transition-all underline decoration-neutral-200 underline-offset-4", isGraphHovered ? "bg-[#3B5998]/10 decoration-[#3B5998] text-[#3B5998]" : "")}>serial fraction</span> of the task.&rdquo;
-                            </p>
-                        </div>
-
-                        <motion.p
-                            className="text-[11px] sm:text-xs text-neutral-400 max-w-xs px-2"
-                            animate={{ opacity: isGraphHovered ? 1 : 0.7 }}
-                        >
-                            We automate the serial part of government work.
-                        </motion.p>
-                    </div>
-                </motion.div>
-
-                {/* Waitlist Input - Integrated */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.8 }}
-                    className="border-t border-[#3B5998]/10 pt-6 sm:pt-8 mt-6 sm:mt-8"
-                >
-                    <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-                        <div className="relative group/input">
-                            <input
-                                type="email"
-                                placeholder="name@agency.gov"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setIsFocused(false)}
-                                disabled={status === "success" || status === "loading"}
-                                className="w-full bg-transparent border-b-2 border-neutral-200 py-3 px-1 text-black placeholder:text-neutral-400 focus:outline-none focus:border-[#3B5998] transition-all duration-300 font-mono text-xs sm:text-sm disabled:opacity-50"
-                            />
-                            <button
-                                type="submit"
-                                disabled={status === "success" || status === "loading" || !email}
-                                className="absolute right-1 top-1/2 -translate-y-1/2 text-[#3B5998] disabled:opacity-30 transition-all duration-300"
-                                aria-label="Submit email"
-                            >
-                                {status === "loading" ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : status === "success" ? (
-                                    <span className="text-xs font-mono text-[#3B5998]">✓</span>
-                                ) : (
-                                    <ArrowRight className="w-4 h-4 opacity-50 group-hover/input:opacity-100 group-hover/input:translate-x-0.5 transition-all" />
-                                )}
-                            </button>
-                        </div>
-                        {status === "error" && (
-                            <motion.p
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-[11px] sm:text-xs text-red-500 mt-2 font-mono"
-                            >
-                                Error. Please try again.
-                            </motion.p>
-                        )}
-                        {status === "success" && (
-                            <motion.p
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-[11px] sm:text-xs text-[#3B5998] mt-2 font-mono"
-                            >
-                                Added to waitlist.
-                            </motion.p>
-                        )}
-                    </form>
-                </motion.div>
-            </div>
             </div>
         </section>
     );
