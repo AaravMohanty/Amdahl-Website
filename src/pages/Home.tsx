@@ -17,11 +17,12 @@ export default function Home() {
   }
 
   const workflowSteps = [
-    { phase: '01', label: 'INTAKE', desc: 'Request monitoring', icon: FileText },
-    { phase: '02', label: 'CLARIFY', desc: 'Requirements gathering', icon: MessageSquare },
-    { phase: '03', label: 'RESEARCH', desc: 'Document analysis', icon: BookOpen },
-    { phase: '04', label: 'SYNTHESIZE', desc: 'Output generation', icon: BarChart3 },
-    { phase: '05', label: 'DELIVER', desc: 'Human approval', icon: FileCheck }
+    { phase: '01', label: 'INTAKE', desc: 'Intelligent request capture', icon: FileText },
+    { phase: '02', label: 'CLARIFY', desc: 'Context & scope refinement', icon: MessageSquare },
+    { phase: '03', label: 'RESEARCH', desc: 'Deep document analysis', icon: BookOpen },
+    { phase: '04', label: 'SYNTHESIZE', desc: 'Strategic synthesis', icon: BarChart3 },
+    { phase: '05', label: 'ANALYZE', desc: 'Data-driven insights', icon: Search },
+    { phase: '06', label: 'DELIVER', desc: 'Human-validated output', icon: FileCheck }
   ]
 
   return (
@@ -258,7 +259,7 @@ export default function Home() {
                   </div>
                   <div className="absolute bottom-8 right-6 opacity-10">
                     <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
-                      <path d="M0 25 L10 20 L20 22 L30 15 L40 18 L50 10 L60 5" stroke="white" strokeWidth="2" fill="none"/>
+                      <path d="M0 25 L10 20 L20 22 L30 15 L40 18 L50 10 L60 5" stroke="white" strokeWidth="2" fill="none" />
                     </svg>
                   </div>
                   <div>
@@ -310,7 +311,7 @@ export default function Home() {
               <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#666]">Process</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight uppercase">
-              Five-stage pipeline
+              Six-stage pipeline
             </h2>
           </motion.div>
 
@@ -319,7 +320,7 @@ export default function Home() {
             {/* Connection line (visible on desktop) */}
             <div className="hidden md:block absolute top-[60px] left-[10%] right-[10%] h-0.5 bg-[#e0e0e0]" style={{ transform: 'rotate(4.5deg)', transformOrigin: 'left center' }} />
 
-            <div className="grid md:grid-cols-5 gap-4">
+            <div className="grid md:grid-cols-6 gap-3">
               {workflowSteps.map((step, i) => (
                 <motion.div
                   key={step.phase}
@@ -509,7 +510,7 @@ export default function Home() {
             <span className="font-bold uppercase tracking-wide">Amdahl</span>
           </div>
           <div className="flex items-center gap-8 text-sm text-[#666] uppercase tracking-wide">
-            <a href="mailto:contact@amdahl.ai" className="hover:text-[#111] transition-colors">contact@amdahl.ai</a>
+            <a href="mailto:contact@amdahl.app" className="hover:text-[#111] transition-colors">contact@amdahl.app</a>
             <a href="/privacy" className="hover:text-[#111] transition-colors">Privacy</a>
           </div>
           <div className="text-sm text-[#666]">
