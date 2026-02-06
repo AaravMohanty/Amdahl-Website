@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, ChevronRight } from 'lucide-react'
+import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, ChevronRight, MessageSquare, BookOpen, Clock, Database, Zap, Lock } from 'lucide-react'
 
 export default function Home() {
   const [email, setEmail] = useState('')
@@ -18,8 +18,8 @@ export default function Home() {
 
   const workflowSteps = [
     { phase: '01', label: 'INTAKE', desc: 'Request monitoring', icon: FileText },
-    { phase: '02', label: 'CLARIFY', desc: 'Requirements gathering', icon: Search },
-    { phase: '03', label: 'RESEARCH', desc: 'Document analysis', icon: Search },
+    { phase: '02', label: 'CLARIFY', desc: 'Requirements gathering', icon: MessageSquare },
+    { phase: '03', label: 'RESEARCH', desc: 'Document analysis', icon: BookOpen },
     { phase: '04', label: 'SYNTHESIZE', desc: 'Output generation', icon: BarChart3 },
     { phase: '05', label: 'DELIVER', desc: 'Human approval', icon: FileCheck }
   ]
@@ -46,7 +46,12 @@ export default function Home() {
         className="relative z-50 flex items-center justify-between px-8 py-6 lg:px-16 border-b border-[#e0e0e0]"
       >
         <div className="flex items-center gap-3">
-          <img src="/Logo.png" alt="Amdahl" className="h-10 w-auto" />
+          <img
+            src="/logo_new.png"
+            alt="Amdahl"
+            className="h-10 w-auto"
+            style={{ filter: 'invert(1) brightness(0)' }}
+          />
           <span className="text-lg font-bold tracking-tight uppercase">Amdahl</span>
         </div>
 
@@ -155,23 +160,112 @@ export default function Home() {
               className="lg:col-span-5"
             >
               <div className="grid grid-cols-2 gap-4">
-                {[
-                  { value: '60%', label: 'Faster' },
-                  { value: '100%', label: 'Sovereign' },
-                  { value: 'Full', label: 'Audit' },
-                  { value: '24/7', label: 'Active' }
-                ].map((stat, i) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + i * 0.1 }}
-                    className="aspect-square bg-white border-2 border-[#e0e0e0] p-6 flex flex-col justify-end hover:border-[#111] transition-colors"
-                  >
-                    <div className="text-4xl font-bold tracking-tight">{stat.value}</div>
-                    <div className="text-xs uppercase tracking-wider text-[#666] mt-2">{stat.label}</div>
-                  </motion.div>
-                ))}
+                {/* First Draft Speed */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-6 flex flex-col justify-between hover:border-[#111] transition-colors relative overflow-hidden group"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 bg-[#111] flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex gap-1">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="w-1 h-8 bg-[#e0e0e0] group-hover:bg-[#111] transition-colors" style={{ transitionDelay: `${i * 50}ms` }} />
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold tracking-tight">&lt;2 Hrs</div>
+                    <div className="text-xs uppercase tracking-wider text-[#666] mt-1">First Draft</div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#e0e0e0]">
+                    <motion.div
+                      className="h-full bg-[#111]"
+                      initial={{ width: 0 }}
+                      animate={{ width: '75%' }}
+                      transition={{ delay: 0.8, duration: 1.2, ease: 'easeOut' }}
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Your Cloud */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-6 flex flex-col justify-between hover:border-[#111] transition-colors relative overflow-hidden group"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 bg-[#111] flex items-center justify-center">
+                      <Database className="w-5 h-5 text-white" />
+                    </div>
+                    <Lock className="w-5 h-5 text-[#111]" />
+                  </div>
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <div className="w-32 h-32 border-4 border-[#111] rounded-full" />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold tracking-tight">Your</div>
+                    <div className="text-3xl font-bold tracking-tight text-[#666]">Cloud</div>
+                    <div className="text-xs uppercase tracking-wider text-[#666] mt-1">Zero External APIs</div>
+                  </div>
+                </motion.div>
+
+                {/* Full Audit */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-6 flex flex-col justify-between hover:border-[#111] transition-colors relative overflow-hidden group"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 bg-[#111] flex items-center justify-center">
+                      <FileCheck className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex flex-col gap-1 items-end">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="flex items-center gap-1">
+                          <div className="w-6 h-0.5 bg-[#e0e0e0] group-hover:bg-[#111] transition-colors" style={{ transitionDelay: `${i * 50}ms` }} />
+                          <Check className="w-3 h-3 text-[#111]" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold tracking-tight">Full</div>
+                    <div className="text-xs uppercase tracking-wider text-[#666] mt-1">Audit Trail</div>
+                  </div>
+                </motion.div>
+
+                {/* 24/7 Active */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="aspect-square bg-[#111] border-2 border-[#111] p-6 flex flex-col justify-between hover:bg-[#222] transition-colors relative overflow-hidden group"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 bg-white flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-[#111]" />
+                    </div>
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                  </div>
+                  <div className="absolute bottom-8 right-6 opacity-10">
+                    <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
+                      <path d="M0 25 L10 20 L20 22 L30 15 L40 18 L50 10 L60 5" stroke="white" strokeWidth="2" fill="none"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold tracking-tight text-white">24/7</div>
+                    <div className="text-xs uppercase tracking-wider text-[#888] mt-1">Always Active</div>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -222,6 +316,9 @@ export default function Home() {
 
           {/* Stepped workflow */}
           <div className="relative">
+            {/* Connection line (visible on desktop) */}
+            <div className="hidden md:block absolute top-[60px] left-[10%] right-[10%] h-0.5 bg-[#e0e0e0]" style={{ transform: 'rotate(4.5deg)', transformOrigin: 'left center' }} />
+
             <div className="grid md:grid-cols-5 gap-4">
               {workflowSteps.map((step, i) => (
                 <motion.div
@@ -233,6 +330,37 @@ export default function Home() {
                   className="relative"
                   style={{ marginTop: `${i * 20}px` }}
                 >
+                  {/* Arrow connector between steps */}
+                  {i < workflowSteps.length - 1 && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 + 0.2 }}
+                      className="hidden md:flex absolute -right-2 top-[70px] z-10 items-center justify-center"
+                      style={{ transform: 'translateX(50%)' }}
+                    >
+                      <div className="w-8 h-8 bg-[#111] rounded-full flex items-center justify-center shadow-lg">
+                        <ArrowRight className="w-4 h-4 text-white" />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Mobile arrow (between stacked cards) */}
+                  {i < workflowSteps.length - 1 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 + 0.15 }}
+                      className="md:hidden flex justify-center py-4"
+                    >
+                      <div className="w-8 h-8 bg-[#111] rounded-full flex items-center justify-center rotate-90">
+                        <ArrowRight className="w-4 h-4 text-white" />
+                      </div>
+                    </motion.div>
+                  )}
+
                   <div className="bg-white border-2 border-[#e0e0e0] hover:border-[#111] transition-colors">
                     <div className="p-6 border-b-2 border-[#e0e0e0] bg-[#fafafa]">
                       <span className="text-3xl font-bold tracking-tight">{step.phase}</span>
@@ -372,7 +500,12 @@ export default function Home() {
       <footer id="contact" className="relative z-10 px-8 lg:px-16 py-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src="/Logo.png" alt="Amdahl" className="h-8 w-auto" />
+            <img
+              src="/logo_new.png"
+              alt="Amdahl"
+              className="h-8 w-auto"
+              style={{ filter: 'invert(1) brightness(0)' }}
+            />
             <span className="font-bold uppercase tracking-wide">Amdahl</span>
           </div>
           <div className="flex items-center gap-8 text-sm text-[#666] uppercase tracking-wide">

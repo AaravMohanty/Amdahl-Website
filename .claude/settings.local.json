@@ -9,7 +9,15 @@
       "Bash(copy \"public\\\\logo.png\" \"src\\\\app\\\\icon.png\")",
       "Bash(del \"src\\\\app\\\\favicon.ico\")",
       "Bash(cp:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(bun create:*)",
+      "Bash(curl:*)",
+      "Bash(bash)",
+      "Bash(export PATH=\"$HOME/.bun/bin:$PATH\")",
+      "Skill(frontend-design)",
+      "Bash(bun install:*)",
+      "Bash(bun run dev)",
+      "Bash(npm install)"
     ]
   }
 }
