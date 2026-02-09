@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, MessageSquare, BookOpen, Clock, Database, Zap, Lock, Sparkles } from 'lucide-react'
+import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, MessageSquare, BookOpen, Clock, Database, Zap, Lock, Sparkles, Menu, X } from 'lucide-react'
 
 // Floating Orb component for hero background
 const FloatingOrb = ({
@@ -46,6 +46,7 @@ export default function Home() {
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
 
@@ -94,9 +95,9 @@ export default function Home() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative z-50 flex items-center justify-between px-8 py-6 lg:px-16 border-b border-[#e0e0e0] bg-white/80 backdrop-blur-xl"
+        className="relative z-50 flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 lg:px-16 border-b border-[#e0e0e0] bg-white/80 backdrop-blur-xl"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <motion.div
             className="relative"
             whileHover={{ scale: 1.05 }}
@@ -104,11 +105,11 @@ export default function Home() {
             <img
               src="/logo_new.png"
               alt="Amdahl"
-              className="h-10 w-auto"
+              className="h-8 sm:h-10 w-auto"
               style={{ filter: 'invert(1) brightness(0)' }}
             />
           </motion.div>
-          <span className="text-lg font-bold tracking-tight uppercase">Amdahl</span>
+          <span className="text-base sm:text-lg font-bold tracking-tight uppercase">Amdahl</span>
         </div>
 
         <div className="hidden md:flex items-center gap-12 text-sm text-[#666] uppercase tracking-wide">
@@ -126,26 +127,74 @@ export default function Home() {
           </a>
         </div>
 
-        {/* Launching Soon Badge */}
-        <motion.div
-          className="flex items-center gap-2 px-4 py-2 bg-[#111] text-white text-xs font-medium tracking-wider uppercase rounded-full"
-          whileHover={{ scale: 1.05 }}
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          Launching Soon
-        </motion.div>
+        <div className="flex items-center gap-3">
+          {/* Launching Soon Badge - hidden on very small screens */}
+          <motion.div
+            className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#111] text-white text-xs font-medium tracking-wider uppercase rounded-full"
+            whileHover={{ scale: 1.05 }}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="hidden xs:inline">Launching Soon</span>
+            <span className="xs:hidden">Soon</span>
+          </motion.div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden fixed top-[57px] sm:top-[73px] left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-b border-[#e0e0e0] overflow-hidden"
+          >
+            <div className="flex flex-col py-4 px-4 space-y-4">
+              <a
+                href="#workflow"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-3 px-4 text-sm font-medium uppercase tracking-wide hover:bg-gray-100 transition-colors rounded-lg"
+              >
+                Process
+              </a>
+              <a
+                href="#security"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-3 px-4 text-sm font-medium uppercase tracking-wide hover:bg-gray-100 transition-colors rounded-lg"
+              >
+                Security
+              </a>
+              <a
+                href="#contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-3 px-4 text-sm font-medium uppercase tracking-wide hover:bg-gray-100 transition-colors rounded-lg"
+              >
+                Contact
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <motion.section
         style={{ opacity: heroOpacity }}
-        className="relative z-10 px-8 lg:px-16 pt-20 lg:pt-32 pb-24"
+        className="relative z-10 px-4 sm:px-8 lg:px-16 pt-12 sm:pt-20 lg:pt-32 pb-16 sm:pb-24"
       >
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-16">
+          <div className="grid lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16">
             {/* Left column */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -166,7 +215,7 @@ export default function Home() {
                 </span>
               </motion.div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1] tracking-tight mb-8 uppercase">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1] tracking-tight mb-6 sm:mb-8 uppercase">
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -197,7 +246,7 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="text-xl text-[#666] leading-relaxed max-w-lg mb-12"
+                className="text-base sm:text-lg md:text-xl text-[#666] leading-relaxed max-w-lg mb-8 sm:mb-12"
               >
                 An AI-native strategy delivery system that transforms
                 policy requests into consultant-grade outputs—deployed
@@ -205,21 +254,20 @@ export default function Home() {
               </motion.p>
 
               {/* Email signup */}
-              <form onSubmit={handleSubmit} className="max-w-md">
+              <form onSubmit={handleSubmit} className="w-full max-w-md">
                 <AnimatePresence mode="wait">
                   {!isSuccess ? (
                     <motion.div
                       key="form"
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="flex relative group"
-                    >
+                      className="flex flex-col sm:flex-row relative group">
                       <div className="absolute -inset-1 bg-gradient-to-r from-[#111]/10 to-[#666]/10 rounded-sm blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="name@agency.gov"
-                        className="relative flex-1 px-5 py-4 bg-white border-2 border-[#111] text-[#111] placeholder:text-[#999] focus:outline-none transition-all"
+                        className="relative flex-1 px-3 sm:px-5 py-3 sm:py-4 bg-white border-2 border-[#111] text-[#111] placeholder:text-[#999] focus:outline-none transition-all text-sm sm:text-base"
                         required
                       />
                       <motion.button
@@ -227,7 +275,7 @@ export default function Home() {
                         disabled={isSubmitting}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="relative px-6 py-4 bg-[#111] text-white font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-[#333] transition-colors"
+                        className="relative px-4 sm:px-6 py-3 sm:py-4 bg-[#111] text-white font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#333] transition-colors text-sm sm:text-base"
                       >
                         {isSubmitting ? (
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -261,18 +309,17 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="lg:col-span-5"
             >
-              <div className="grid grid-cols-2 gap-4">
-                {/* First Draft Speed */}
+              <div className="grid grid-cols-2 gap-2 sm:gap-4">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                   whileHover={{ scale: 1.02, borderColor: '#111' }}
-                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group"
+                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-3 sm:p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group"
                 >
                   <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 bg-[#111] flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#111] flex items-center justify-center">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                     </div>
                     <div className="flex gap-1">
                       {[...Array(3)].map((_, i) => (
@@ -287,8 +334,8 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold tracking-tight">&lt;2 Hrs</div>
-                    <div className="text-xs uppercase tracking-wider text-[#666] mt-1">First Draft</div>
+                    <div className="text-xl sm:text-3xl font-bold tracking-tight">&lt;2 Hrs</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[#666] mt-1">First Draft</div>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#e0e0e0]">
                     <motion.div
@@ -300,19 +347,18 @@ export default function Home() {
                   </div>
                 </motion.div>
 
-                {/* Your Cloud */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
                   whileHover={{ scale: 1.02, borderColor: '#111' }}
-                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group"
+                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-3 sm:p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group"
                 >
                   <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 bg-[#111] flex items-center justify-center">
-                      <Database className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#111] flex items-center justify-center">
+                      <Database className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                     </div>
-                    <Lock className="w-5 h-5 text-[#111]" />
+                    <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-[#111]" />
                   </div>
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5 group-hover:opacity-10 transition-opacity">
                     <motion.div
@@ -322,23 +368,22 @@ export default function Home() {
                     />
                   </div>
                   <div>
-                    <div className="text-3xl font-bold tracking-tight">Your</div>
-                    <div className="text-3xl font-bold tracking-tight text-[#666]">Cloud</div>
-                    <div className="text-xs uppercase tracking-wider text-[#666] mt-1">Zero External APIs</div>
+                    <div className="text-xl sm:text-3xl font-bold tracking-tight">Your</div>
+                    <div className="text-xl sm:text-3xl font-bold tracking-tight text-[#666]">Cloud</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[#666] mt-1">Zero External APIs</div>
                   </div>
                 </motion.div>
 
-                {/* Full Audit */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 }}
                   whileHover={{ scale: 1.02, borderColor: '#111' }}
-                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group"
+                  className="aspect-square bg-white border-2 border-[#e0e0e0] p-3 sm:p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group"
                 >
                   <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 bg-[#111] flex items-center justify-center">
-                      <FileCheck className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#111] flex items-center justify-center">
+                      <FileCheck className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                     </div>
                     <div className="flex flex-col gap-1 items-end">
                       {[...Array(4)].map((_, i) => (
@@ -356,22 +401,21 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold tracking-tight">Full</div>
-                    <div className="text-xs uppercase tracking-wider text-[#666] mt-1">Audit Trail</div>
+                    <div className="text-xl sm:text-3xl font-bold tracking-tight">Full</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[#666] mt-1">Audit Trail</div>
                   </div>
                 </motion.div>
 
-                {/* 24/7 Active */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 }}
                   whileHover={{ scale: 1.02 }}
-                  className="aspect-square bg-[#111] border-2 border-[#111] p-6 flex flex-col justify-between hover:bg-[#222] transition-colors relative overflow-hidden group"
+                  className="aspect-square bg-[#111] border-2 border-[#111] p-3 sm:p-6 flex flex-col justify-between hover:bg-[#222] transition-colors relative overflow-hidden group"
                 >
                   <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 bg-white flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-[#111]" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white flex items-center justify-center">
+                      <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#111]" />
                     </div>
                     <span className="relative flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -392,8 +436,8 @@ export default function Home() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold tracking-tight text-white">24/7</div>
-                    <div className="text-xs uppercase tracking-wider text-[#888] mt-1">Always Active</div>
+                    <div className="text-xl sm:text-3xl font-bold tracking-tight text-white">24/7</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[#888] mt-1">Always Active</div>
                   </div>
                 </motion.div>
               </div>
@@ -404,8 +448,8 @@ export default function Home() {
 
       {/* Features bar */}
       <section className="relative z-10 border-y-2 border-[#e0e0e0] bg-white">
-        <div className="max-w-6xl mx-auto px-8 lg:px-16">
-          <div className="grid grid-cols-3 divide-x-2 divide-[#e0e0e0]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y-2 sm:divide-y-0 sm:divide-x-2 divide-[#e0e0e0]">
             {[
               { icon: FileText, label: 'Intelligent Processing' },
               { icon: Search, label: 'Deep Research' },
@@ -417,10 +461,10 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="py-8 px-6 flex items-center gap-4 hover:bg-[#fafafa] transition-colors"
+                className="py-4 sm:py-8 px-4 sm:px-6 flex items-center gap-3 sm:gap-4 hover:bg-[#fafafa] transition-colors"
               >
-                <item.icon className="w-6 h-6 text-[#111]" />
-                <span className="text-sm font-medium uppercase tracking-wide">{item.label}</span>
+                <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#111] flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-medium uppercase tracking-wide">{item.label}</span>
               </motion.div>
             ))}
           </div>
@@ -428,19 +472,19 @@ export default function Home() {
       </section>
 
       {/* Workflow Section */}
-      <section id="workflow" className="relative z-10 px-8 lg:px-16 py-24">
+      <section id="workflow" className="relative z-10 px-4 sm:px-8 lg:px-16 py-16 sm:py-24">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="mb-8 sm:mb-16"
           >
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-px bg-[#111]" />
+              <div className="w-8 sm:w-12 h-px bg-[#111]" />
               <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#666]">Process</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight uppercase">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight uppercase">
               Six-stage pipeline
             </h2>
           </motion.div>
@@ -450,7 +494,7 @@ export default function Home() {
             {/* Connection line */}
             <div className="hidden lg:block absolute top-[60px] left-[10%] right-[10%] h-0.5 bg-[#e0e0e0]" style={{ transform: 'rotate(4.5deg)', transformOrigin: 'left center' }} />
 
-            <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
               {workflowSteps.map((step, i) => (
                 <motion.div
                   key={step.phase}
@@ -500,7 +544,7 @@ export default function Home() {
       </section>
 
       {/* Security Section */}
-      <section id="security" className="relative z-10 bg-[#111] text-white py-24 lg:py-32 overflow-hidden">
+      <section id="security" className="relative z-10 bg-[#111] text-white py-16 sm:py-24 lg:py-32 overflow-hidden">
         {/* Grid overlay */}
         <div
           className="absolute inset-0 pointer-events-none opacity-10"
@@ -513,8 +557,8 @@ export default function Home() {
           }}
         />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-8 lg:px-16">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -524,11 +568,11 @@ export default function Home() {
                 <div className="w-12 h-px bg-white" />
                 <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#888]">Security</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 uppercase">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 sm:mb-6 uppercase">
                 Fortress-grade
                 <br />infrastructure
               </h2>
-              <p className="text-xl text-[#888] leading-relaxed mb-8">
+              <p className="text-base sm:text-lg md:text-xl text-[#888] leading-relaxed mb-6 sm:mb-8">
                 Deployed entirely within your Microsoft 365 and Azure environment.
                 Zero external dependencies. Complete data sovereignty.
               </p>
@@ -563,7 +607,7 @@ export default function Home() {
               className="relative"
             >
               {/* Animated security visualization */}
-              <div className="relative aspect-square flex items-center justify-center">
+              <div className="relative aspect-square flex items-center justify-center max-w-[300px] sm:max-w-none mx-auto">
                 {/* Animated rings */}
                 {[...Array(4)].map((_, i) => (
                   <motion.div
@@ -648,19 +692,19 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative z-10 px-8 lg:px-16 py-24 border-b-2 border-[#e0e0e0]">
+      <section className="relative z-10 px-4 sm:px-8 lg:px-16 py-16 sm:py-24 border-b-2 border-[#e0e0e0]">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex flex-col lg:flex-row items-center justify-between gap-8"
+            className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 text-center lg:text-left"
           >
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight uppercase mb-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight uppercase mb-2">
                 Ready to build?
               </h2>
-              <p className="text-[#666]">
+              <p className="text-sm sm:text-base text-[#666]">
                 Join government leaders on the early access list.
               </p>
             </div>
@@ -678,22 +722,22 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="relative z-10 px-8 lg:px-16 py-12">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <footer id="contact" className="relative z-10 px-4 sm:px-8 lg:px-16 py-8 sm:py-12">
+        <div className="max-w-6xl mx-auto flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-left">
           <div className="flex items-center gap-3">
             <img
               src="/logo_new.png"
               alt="Amdahl"
-              className="h-8 w-auto"
+              className="h-6 sm:h-8 w-auto"
               style={{ filter: 'invert(1) brightness(0)' }}
             />
-            <span className="font-bold uppercase tracking-wide">Amdahl</span>
+            <span className="font-bold uppercase tracking-wide text-sm sm:text-base">Amdahl</span>
           </div>
-          <div className="flex items-center gap-8 text-sm text-[#666] uppercase tracking-wide">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 text-xs sm:text-sm text-[#666] uppercase tracking-wide">
             <a href="mailto:contact@amdahl.app" className="hover:text-[#111] transition-colors">contact@amdahl.app</a>
             <a href="/privacy" className="hover:text-[#111] transition-colors">Privacy</a>
           </div>
-          <div className="text-sm text-[#666]">
+          <div className="text-xs sm:text-sm text-[#666]">
             © {new Date().getFullYear()} Amdahl
           </div>
         </div>
