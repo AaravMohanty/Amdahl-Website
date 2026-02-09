@@ -577,7 +577,7 @@ export default function Home() {
               <div className="space-y-4">
                 {[
                   'Runs in your Azure environment',
-                  'Zero external API dependencies',
+                  'Secure API integrations',
                   'Every output citation-backed',
                   'Human review before delivery'
                 ].map((item, index) => (
