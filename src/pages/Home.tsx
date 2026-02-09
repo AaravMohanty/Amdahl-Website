@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, MessageSquare, BookOpen, Clock, Database, Zap, Lock, Sparkles, Menu, X } from 'lucide-react'
+import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, BookOpen, Clock, Database, Zap, Lock, Sparkles, Menu, X } from 'lucide-react'
 
 // Floating Orb component for hero background
 const FloatingOrb = ({
@@ -60,12 +60,12 @@ export default function Home() {
   }
 
   const workflowSteps = [
-    { phase: '01', label: 'INTAKE', desc: 'Intelligent request capture', icon: FileText },
-    { phase: '02', label: 'CLARIFY', desc: 'Context & scope refinement', icon: MessageSquare },
-    { phase: '03', label: 'RESEARCH', desc: 'Deep document analysis', icon: BookOpen },
-    { phase: '04', label: 'SYNTHESIZE', desc: 'Strategic synthesis', icon: BarChart3 },
-    { phase: '05', label: 'ANALYZE', desc: 'Data-driven insights', icon: Search },
-    { phase: '06', label: 'DELIVER', desc: 'Human-validated output', icon: FileCheck }
+    { phase: '01', label: 'INTAKE', desc: 'Capture your request', icon: FileText },
+    { phase: '02', label: 'GATHER', desc: 'Pull internal documents', icon: Database },
+    { phase: '03', label: 'RESEARCH', desc: 'Find authoritative sources', icon: BookOpen },
+    { phase: '04', label: 'SYNTHESIZE', desc: 'Merge context & data', icon: BarChart3 },
+    { phase: '05', label: 'DRAFT', desc: 'Generate deliverable', icon: FileCheck },
+    { phase: '06', label: 'REVIEW', desc: 'Human validation', icon: Shield }
   ]
 
   return (
@@ -137,8 +137,7 @@ export default function Home() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="hidden xs:inline">Launching Soon</span>
-            <span className="xs:hidden">Soon</span>
+            Launching Soon
           </motion.div>
 
           {/* Mobile Menu Button */}
@@ -211,7 +210,7 @@ export default function Home() {
                 <div className="w-12 h-px bg-[#111]" />
                 <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#666] flex items-center gap-2">
                   <Sparkles className="w-3 h-3" />
-                  Strategy Infrastructure
+                  Consulting as Software
                 </span>
               </motion.div>
 
@@ -222,7 +221,7 @@ export default function Home() {
                   transition={{ delay: 0.3 }}
                   className="block"
                 >
-                  Built for
+                  Strategy
                 </motion.span>
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
@@ -230,7 +229,7 @@ export default function Home() {
                   transition={{ delay: 0.4 }}
                   className="block text-[#666]"
                 >
-                  government
+                  workflows
                 </motion.span>
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
@@ -238,7 +237,7 @@ export default function Home() {
                   transition={{ delay: 0.5 }}
                   className="block"
                 >
-                  scale
+                  automated
                 </motion.span>
               </h1>
 
@@ -248,9 +247,8 @@ export default function Home() {
                 transition={{ delay: 0.6 }}
                 className="text-base sm:text-lg md:text-xl text-[#666] leading-relaxed max-w-lg mb-8 sm:mb-12"
               >
-                An AI-native strategy delivery system that transforms
-                policy requests into consultant-grade outputs—deployed
-                within your secure infrastructure.
+                Turn expensive consulting deliverables into on-demand software.
+                Citation-backed reports from your internal documents and authoritative sources—available 24/7.
               </motion.p>
 
               {/* Email signup */}
@@ -451,9 +449,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y-2 sm:divide-y-0 sm:divide-x-2 divide-[#e0e0e0]">
             {[
-              { icon: FileText, label: 'Intelligent Processing' },
-              { icon: Search, label: 'Deep Research' },
-              { icon: Shield, label: 'Human Control' }
+              { icon: FileText, label: 'Financial Forecasts' },
+              { icon: Search, label: 'Performance Analysis' },
+              { icon: Shield, label: 'Citation-Backed' }
             ].map((item, index) => (
               <motion.div
                 key={item.label}
@@ -485,7 +483,7 @@ export default function Home() {
               <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#666]">Process</span>
             </div>
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight uppercase">
-              Six-stage pipeline
+              How it works
             </h2>
           </motion.div>
 
@@ -578,10 +576,10 @@ export default function Home() {
               </p>
               <div className="space-y-4">
                 {[
-                  'FedRAMP-aligned architecture',
-                  'Zero external API calls',
-                  'Complete audit trail',
-                  'Human approval gates'
+                  'Runs in your Azure environment',
+                  'Zero external API dependencies',
+                  'Every output citation-backed',
+                  'Human review before delivery'
                 ].map((item, index) => (
                   <motion.div
                     key={item}
@@ -702,10 +700,10 @@ export default function Home() {
           >
             <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight uppercase mb-2">
-                Ready to build?
+                Stop outsourcing
               </h2>
               <p className="text-sm sm:text-base text-[#666]">
-                Join government leaders on the early access list.
+                Get consultant-quality deliverables on demand.
               </p>
             </div>
             <motion.a
