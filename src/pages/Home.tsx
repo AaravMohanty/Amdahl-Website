@@ -3,16 +3,16 @@ import { motion, AnimatePresence, useScroll, useTransform, useInView } from 'fra
 import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, BookOpen, Clock, Database, Zap, Lock, Sparkles, Menu, X, TrendingUp } from 'lucide-react'
 import { useRef } from 'react'
 
-// Amdahl's Law: single curve showing speedup as you automate more work
-// For a large team (N→∞), max speedup = 1/(1-p) where p = fraction automated
-const maxSpeedup = (p: number) => 1 / (1 - p)
+// Amdahl's Law: S(N) = 1 / ((1-p) + p/N)
+// p = fraction of work that is repeatable/automatable
+// N = number of resources (agents, tools) applied
+// Key insight: no matter how large N gets, speedup maxes out at 1/(1-p)
+const amdahlSpeedup = (p: number, n: number) => 1 / ((1 - p) + p / n)
 
-// Key milestones to annotate on the curve
-const milestones = [
-  { p: 0.50, label: '2x faster', note: '50% automated' },
-  { p: 0.75, label: '4x faster', note: '75% automated' },
-  { p: 0.90, label: '10x faster', note: '90% automated' },
-  { p: 0.95, label: '20x faster', note: '95% automated' },
+// Two curves to tell the story simply
+const curves = [
+  { p: 0.50, label: 'Only 50% is repeatable', color: '#ccc', ceiling: 2 },
+  { p: 0.95, label: 'Gov reports (95% repeatable)', color: '#111', ceiling: 20 },
 ]
 
 const CHART_W = 520
@@ -20,23 +20,23 @@ const CHART_H = 340
 const PADDING = { top: 40, right: 30, bottom: 55, left: 80 }
 const PLOT_W = CHART_W - PADDING.left - PADDING.right
 const PLOT_H = CHART_H - PADDING.top - PADDING.bottom
-const MAX_P = 0.98
-const MAX_SPEEDUP = 22
+const MAX_N = 64
+const MAX_S = 24
 
-const toX = (p: number) => PADDING.left + (p / MAX_P) * PLOT_W
-const toY = (s: number) => PADDING.top + PLOT_H - ((s - 1) / (MAX_SPEEDUP - 1)) * PLOT_H
+const toX = (n: number) => PADDING.left + (Math.log2(n) / Math.log2(MAX_N)) * PLOT_W
+const toY = (s: number) => PADDING.top + PLOT_H - ((s - 1) / (MAX_S - 1)) * PLOT_H
 
-// Generate the main curve path
-const curveSteps = 100
-const curvePoints: { p: number; s: number }[] = []
-for (let i = 0; i <= curveSteps; i++) {
-  const p = MAX_P * (i / curveSteps)
-  curvePoints.push({ p, s: maxSpeedup(p) })
+// Generate curve paths
+const buildCurvePath = (p: number) => {
+  const steps = 100
+  const pts: string[] = []
+  for (let i = 0; i <= steps; i++) {
+    const n = 1 + (MAX_N - 1) * (i / steps)
+    const s = Math.min(amdahlSpeedup(p, n), MAX_S)
+    pts.push(`${i === 0 ? 'M' : 'L'}${toX(n)},${toY(s)}`)
+  }
+  return pts.join(' ')
 }
-const curvePath = curvePoints
-  .map((pt, i) => `${i === 0 ? 'M' : 'L'}${toX(pt.p)},${toY(Math.min(pt.s, MAX_SPEEDUP))}`)
-  .join(' ')
-const fillPath = curvePath + ` L${toX(MAX_P)},${toY(1)} L${toX(0)},${toY(1)} Z`
 
 const AmdahlChart = () => {
   const ref = useRef<SVGSVGElement>(null)
@@ -49,7 +49,7 @@ const AmdahlChart = () => {
       className="w-full h-auto"
       style={{ maxWidth: 580 }}
     >
-      {/* Grid lines */}
+      {/* Y-axis grid lines */}
       {[1, 5, 10, 15, 20].map((s) => (
         <g key={`grid-${s}`}>
           <line
@@ -73,17 +73,17 @@ const AmdahlChart = () => {
         </g>
       ))}
 
-      {/* X-axis percentage labels */}
-      {[0, 25, 50, 75, 100].map((pct) => (
+      {/* X-axis labels (log scale: 1, 2, 4, 8, 16, 32, 64) */}
+      {[1, 2, 4, 8, 16, 32, 64].map((n) => (
         <text
-          key={`xlabel-${pct}`}
-          x={toX(pct / 100)}
+          key={`xlabel-${n}`}
+          x={toX(n)}
           y={PADDING.top + PLOT_H + 24}
           textAnchor="middle"
           className="fill-[#999]"
           style={{ fontSize: 11, fontFamily: 'Inter, sans-serif' }}
         >
-          {pct}%
+          {n}
         </text>
       ))}
 
@@ -95,7 +95,7 @@ const AmdahlChart = () => {
         className="fill-[#666]"
         style={{ fontSize: 12, fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
       >
-        % of Work Automated
+        Resources Applied
       </text>
 
       {/* Y-axis label */}
@@ -110,99 +110,106 @@ const AmdahlChart = () => {
         How Much Faster
       </text>
 
-      {/* X axis line */}
-      <line
-        x1={PADDING.left}
-        y1={PADDING.top + PLOT_H}
-        x2={PADDING.left + PLOT_W}
-        y2={PADDING.top + PLOT_H}
-        stroke="#ccc"
-        strokeWidth={1.5}
-      />
-      {/* Y axis line */}
-      <line
-        x1={PADDING.left}
-        y1={PADDING.top}
-        x2={PADDING.left}
-        y2={PADDING.top + PLOT_H}
-        stroke="#ccc"
-        strokeWidth={1.5}
-      />
+      {/* Axes */}
+      <line x1={PADDING.left} y1={PADDING.top + PLOT_H} x2={PADDING.left + PLOT_W} y2={PADDING.top + PLOT_H} stroke="#ccc" strokeWidth={1.5} />
+      <line x1={PADDING.left} y1={PADDING.top} x2={PADDING.left} y2={PADDING.top + PLOT_H} stroke="#ccc" strokeWidth={1.5} />
 
-      {/* Shaded area under curve */}
-      <motion.path
-        d={fillPath}
-        fill="#111"
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 0.05 } : { opacity: 0 }}
-        transition={{ duration: 1.5, delay: 0.6 }}
-      />
+      {/* Ceiling lines + curve paths */}
+      {curves.map((curve, ci) => {
+        const path = buildCurvePath(curve.p)
+        const ceilingY = toY(curve.ceiling)
 
-      {/* Main curve */}
-      <motion.path
-        d={curvePath}
-        fill="none"
-        stroke="#111"
-        strokeWidth={3}
-        strokeLinecap="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
-        transition={{ duration: 2, delay: 0.3, ease: 'easeOut' }}
-      />
+        return (
+          <g key={curve.p}>
+            {/* Horizontal ceiling line (dashed) */}
+            <motion.line
+              x1={PADDING.left}
+              y1={ceilingY}
+              x2={PADDING.left + PLOT_W}
+              y2={ceilingY}
+              stroke={curve.color}
+              strokeWidth={1}
+              strokeDasharray="6 4"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 0.4 } : { opacity: 0 }}
+              transition={{ duration: 0.8, delay: 1.5 + ci * 0.3 }}
+            />
 
-      {/* Milestone annotations */}
-      {milestones.map((m, i) => {
-        const cx = toX(m.p)
-        const cy = toY(maxSpeedup(m.p))
-        // Alternate label positions: above for first two, to the left for last two
-        const isUpper = i >= 2
-        const labelX = isUpper ? cx - 12 : cx
-        const labelY = isUpper ? cy - 28 : cy - 20
+            {/* Ceiling label */}
+            <motion.text
+              x={PADDING.left + PLOT_W + 4}
+              y={ceilingY + 4}
+              className="fill-[#999]"
+              style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 0.6 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: 1.8 + ci * 0.3 }}
+            >
+              {curve.ceiling}x max
+            </motion.text>
+
+            {/* The curve itself */}
+            <motion.path
+              d={path}
+              fill="none"
+              stroke={curve.color}
+              strokeWidth={curve.p === 0.95 ? 3 : 2.5}
+              strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
+              transition={{ duration: 2, delay: 0.3 + ci * 0.4, ease: 'easeOut' }}
+            />
+          </g>
+        )
+      })}
+
+      {/* Curve labels (positioned at N=32 on each curve) */}
+      {curves.map((curve, ci) => {
+        const labelN = 20
+        const s = amdahlSpeedup(curve.p, labelN)
+        const lx = toX(labelN)
+        const ly = toY(s)
+        const textWidth = curve.p === 0.95 ? 155 : 130
 
         return (
           <motion.g
-            key={m.p}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-            transition={{ duration: 0.4, delay: 1.2 + i * 0.25 }}
+            key={`label-${curve.p}`}
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.5, delay: 2 + ci * 0.3 }}
           >
-            {/* Dot on curve */}
-            <circle cx={cx} cy={cy} r={5} fill="#111" />
-            <circle cx={cx} cy={cy} r={3} fill="white" />
-
-            {/* Dashed line from dot to label */}
-            <line
-              x1={cx}
-              y1={cy - 6}
-              x2={labelX}
-              y2={labelY + 14}
-              stroke="#ccc"
-              strokeWidth={1}
-              strokeDasharray="3 3"
-            />
-
-            {/* Label bg */}
             <rect
-              x={labelX - 36}
-              y={labelY - 8}
-              width={72}
-              height={22}
+              x={lx - textWidth / 2}
+              y={curve.p === 0.95 ? ly - 26 : ly + 8}
+              width={textWidth}
+              height={20}
               rx={4}
-              fill="#111"
+              fill={curve.p === 0.95 ? '#111' : '#e5e7eb'}
             />
-            {/* Label text */}
             <text
-              x={labelX}
-              y={labelY + 7}
+              x={lx}
+              y={curve.p === 0.95 ? ly - 12 : ly + 22}
               textAnchor="middle"
-              fill="white"
-              style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', fontWeight: 700 }}
+              fill={curve.p === 0.95 ? 'white' : '#666'}
+              style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
             >
-              {m.label}
+              {curve.label}
             </text>
           </motion.g>
         )
       })}
+
+      {/* Annotation arrow showing the "ceiling" concept */}
+      <motion.g
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.6, delay: 2.8 }}
+      >
+        {/* Bracket between the two ceilings on the right side */}
+        <line x1={PADDING.left + PLOT_W - 20} y1={toY(2) - 2} x2={PADDING.left + PLOT_W - 20} y2={toY(20) + 2} stroke="#111" strokeWidth={1.5} />
+        <line x1={PADDING.left + PLOT_W - 24} y1={toY(2) - 2} x2={PADDING.left + PLOT_W - 16} y2={toY(2) - 2} stroke="#111" strokeWidth={1.5} />
+        <line x1={PADDING.left + PLOT_W - 24} y1={toY(20) + 2} x2={PADDING.left + PLOT_W - 16} y2={toY(20) + 2} stroke="#111" strokeWidth={1.5} />
+      </motion.g>
     </svg>
   )
 }
@@ -789,7 +796,7 @@ export default function Home() {
               </div>
               <AmdahlChart />
               <p className="text-[11px] text-[#999] text-center mt-3">
-                The more repetitive work you automate, the faster your whole process gets.
+                Each curve hits a ceiling. The more repeatable the work, the higher the ceiling.
               </p>
             </motion.div>
 
