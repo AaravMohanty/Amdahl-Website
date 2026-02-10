@@ -11,8 +11,8 @@ const amdahlSpeedup = (p: number, n: number) => 1 / ((1 - p) + p / n)
 
 // Two curves to tell the story simply
 const curves = [
-  { p: 0.50, label: 'Only 50% is repeatable', color: '#ccc', ceiling: 2 },
-  { p: 0.95, label: 'Gov reports (95% repeatable)', color: '#111', ceiling: 20 },
+  { p: 0.50, label: 'Small bottleneck improved', color: '#ccc', ceiling: 2 },
+  { p: 0.95, label: 'Major bottleneck improved (gov reports)', color: '#111', ceiling: 20 },
 ]
 
 const CHART_W = 520
@@ -796,7 +796,7 @@ export default function Home() {
               </div>
               <AmdahlChart />
               <p className="text-[11px] text-[#999] text-center mt-3">
-                Each curve hits a ceiling. The more repeatable the work, the higher the ceiling.
+                The bigger the bottleneck you solve, the greater the productivity gain.
               </p>
             </motion.div>
 
