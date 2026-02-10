@@ -3,36 +3,38 @@ import { motion, AnimatePresence, useScroll, useTransform, useInView } from 'fra
 import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, BookOpen, Clock, Database, Zap, Lock, Sparkles, Menu, X, TrendingUp } from 'lucide-react'
 import { useRef } from 'react'
 
-// Amdahl's Law: S(N) = 1 / ((1-p) + p/N)
-// p = fraction of work that is repeatable/automatable
-// N = number of resources (agents, tools) applied
-// Key insight: no matter how large N gets, speedup maxes out at 1/(1-p)
-const amdahlSpeedup = (p: number, n: number) => 1 / ((1 - p) + p / n)
+// Amdahl's Law: S(N) = 1 / (s + (1-s)/N)
+// s = serial fraction (cannot be parallelized)
+// N = parallel resources (people, tools, agents)
+// Key insight: as N→∞, speedup maxes out at 1/s
+const amdahlSpeedup = (serial: number, n: number) => 1 / (serial + (1 - serial) / n)
 
-// Two curves to tell the story simply
+// Four curves showing different serial fractions
 const curves = [
-  { p: 0.50, label: 'Minor bottleneck', color: '#ccc', ceiling: 2 },
-  { p: 0.95, label: 'Gov reports (major bottleneck)', color: '#111', ceiling: 20 },
+  { s: 0.40, label: '40% serial', color: '#d1d5db', maxS: 2.5 },
+  { s: 0.20, label: '20% serial', color: '#9ca3af', maxS: 5 },
+  { s: 0.10, label: '10% serial', color: '#6b7280', maxS: 10 },
+  { s: 0.05, label: '5% serial', color: '#111', maxS: 20 },
 ]
 
-const CHART_W = 520
+const CHART_W = 540
 const CHART_H = 340
-const PADDING = { top: 40, right: 30, bottom: 55, left: 80 }
+const PADDING = { top: 30, right: 50, bottom: 55, left: 70 }
 const PLOT_W = CHART_W - PADDING.left - PADDING.right
 const PLOT_H = CHART_H - PADDING.top - PADDING.bottom
 const MAX_N = 64
-const MAX_S = 24
+const MAX_Y = 22
 
-const toX = (n: number) => PADDING.left + (Math.log2(n) / Math.log2(MAX_N)) * PLOT_W
-const toY = (s: number) => PADDING.top + PLOT_H - ((s - 1) / (MAX_S - 1)) * PLOT_H
+// Log-scale X, linear Y
+const toX = (n: number) => PADDING.left + (Math.log2(Math.max(n, 1)) / Math.log2(MAX_N)) * PLOT_W
+const toY = (s: number) => PADDING.top + PLOT_H - ((s - 1) / (MAX_Y - 1)) * PLOT_H
 
-// Generate curve paths
-const buildCurvePath = (p: number) => {
-  const steps = 100
+// Build SVG path for a given serial fraction
+const buildPath = (serial: number) => {
   const pts: string[] = []
-  for (let i = 0; i <= steps; i++) {
-    const n = 1 + (MAX_N - 1) * (i / steps)
-    const s = Math.min(amdahlSpeedup(p, n), MAX_S)
+  for (let i = 0; i <= 120; i++) {
+    const n = 1 + (MAX_N - 1) * (i / 120)
+    const s = Math.min(amdahlSpeedup(serial, n), MAX_Y)
     pts.push(`${i === 0 ? 'M' : 'L'}${toX(n)},${toY(s)}`)
   }
   return pts.join(' ')
@@ -47,169 +49,134 @@ const AmdahlChart = () => {
       ref={ref}
       viewBox={`0 0 ${CHART_W} ${CHART_H}`}
       className="w-full h-auto"
-      style={{ maxWidth: 580 }}
+      style={{ maxWidth: 600 }}
     >
-      {/* Y-axis grid lines */}
-      {[1, 5, 10, 15, 20].map((s) => (
-        <g key={`grid-${s}`}>
+      {/* Y grid + labels */}
+      {[1, 5, 10, 15, 20].map((v) => (
+        <g key={`yg-${v}`}>
           <line
-            x1={PADDING.left}
-            y1={toY(s)}
-            x2={PADDING.left + PLOT_W}
-            y2={toY(s)}
-            stroke="#e5e7eb"
-            strokeWidth={1}
-            strokeDasharray={s === 1 ? '0' : '4 4'}
+            x1={PADDING.left} y1={toY(v)}
+            x2={PADDING.left + PLOT_W} y2={toY(v)}
+            stroke="#e5e7eb" strokeWidth={1}
+            strokeDasharray={v === 1 ? '0' : '4 4'}
           />
           <text
-            x={PADDING.left - 12}
-            y={toY(s) + 4}
-            textAnchor="end"
-            className="fill-[#999]"
+            x={PADDING.left - 10} y={toY(v) + 4}
+            textAnchor="end" className="fill-[#999]"
             style={{ fontSize: 11, fontFamily: 'Inter, sans-serif' }}
           >
-            {s}x
+            {v}x
           </text>
         </g>
       ))}
 
-      {/* X-axis labels (log scale: 1, 2, 4, 8, 16, 32, 64) */}
+      {/* X labels (log scale) */}
       {[1, 2, 4, 8, 16, 32, 64].map((n) => (
         <text
-          key={`xlabel-${n}`}
-          x={toX(n)}
-          y={PADDING.top + PLOT_H + 24}
-          textAnchor="middle"
-          className="fill-[#999]"
+          key={`xl-${n}`} x={toX(n)}
+          y={PADDING.top + PLOT_H + 22}
+          textAnchor="middle" className="fill-[#999]"
           style={{ fontSize: 11, fontFamily: 'Inter, sans-serif' }}
         >
           {n}
         </text>
       ))}
 
-      {/* X-axis label */}
+      {/* Axis titles */}
       <text
-        x={PADDING.left + PLOT_W / 2}
-        y={CHART_H - 6}
-        textAnchor="middle"
-        className="fill-[#666]"
+        x={PADDING.left + PLOT_W / 2} y={CHART_H - 4}
+        textAnchor="middle" className="fill-[#666]"
         style={{ fontSize: 12, fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
       >
-        Resources Applied
+        Parallel Resources (people / tools)
       </text>
-
-      {/* Y-axis label */}
       <text
-        x={0}
-        y={0}
-        textAnchor="middle"
-        className="fill-[#666]"
+        x={0} y={0} textAnchor="middle" className="fill-[#666]"
         style={{ fontSize: 12, fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
-        transform={`translate(22, ${PADDING.top + PLOT_H / 2}) rotate(-90)`}
+        transform={`translate(18, ${PADDING.top + PLOT_H / 2}) rotate(-90)`}
       >
-        How Much Faster
+        Overall Speedup
       </text>
 
       {/* Axes */}
       <line x1={PADDING.left} y1={PADDING.top + PLOT_H} x2={PADDING.left + PLOT_W} y2={PADDING.top + PLOT_H} stroke="#ccc" strokeWidth={1.5} />
       <line x1={PADDING.left} y1={PADDING.top} x2={PADDING.left} y2={PADDING.top + PLOT_H} stroke="#ccc" strokeWidth={1.5} />
 
-      {/* Ceiling lines + curve paths */}
-      {curves.map((curve, ci) => {
-        const path = buildCurvePath(curve.p)
-        const ceilingY = toY(curve.ceiling)
+      {/* Curves + ceiling lines */}
+      {curves.map((c, ci) => {
+        const path = buildPath(c.s)
+        const ceilY = toY(c.maxS)
 
         return (
-          <g key={curve.p}>
-            {/* Horizontal ceiling line (dashed) */}
+          <g key={c.s}>
+            {/* Dashed ceiling */}
             <motion.line
-              x1={PADDING.left}
-              y1={ceilingY}
-              x2={PADDING.left + PLOT_W}
-              y2={ceilingY}
-              stroke={curve.color}
-              strokeWidth={1}
-              strokeDasharray="6 4"
+              x1={PADDING.left} y1={ceilY}
+              x2={PADDING.left + PLOT_W} y2={ceilY}
+              stroke={c.color} strokeWidth={1} strokeDasharray="6 4"
               initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 0.4 } : { opacity: 0 }}
-              transition={{ duration: 0.8, delay: 1.5 + ci * 0.3 }}
+              animate={isInView ? { opacity: 0.35 } : { opacity: 0 }}
+              transition={{ duration: 0.6, delay: 1.6 + ci * 0.15 }}
             />
 
-            {/* Ceiling label */}
+            {/* Ceiling label on right edge */}
             <motion.text
-              x={PADDING.left + PLOT_W + 4}
-              y={ceilingY + 4}
+              x={PADDING.left + PLOT_W + 6} y={ceilY + 4}
               className="fill-[#999]"
-              style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+              style={{ fontSize: 9, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 0.6 } : { opacity: 0 }}
-              transition={{ duration: 0.5, delay: 1.8 + ci * 0.3 }}
+              transition={{ duration: 0.4, delay: 1.8 + ci * 0.15 }}
             >
-              {curve.ceiling}x max
+              {c.maxS}x
             </motion.text>
 
-            {/* The curve itself */}
+            {/* Curve */}
             <motion.path
-              d={path}
-              fill="none"
-              stroke={curve.color}
-              strokeWidth={curve.p === 0.95 ? 3 : 2.5}
+              d={path} fill="none" stroke={c.color}
+              strokeWidth={c.s === 0.05 ? 3 : 2}
               strokeLinecap="round"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
-              transition={{ duration: 2, delay: 0.3 + ci * 0.4, ease: 'easeOut' }}
+              transition={{ duration: 2, delay: 0.2 + ci * 0.3, ease: 'easeOut' }}
             />
           </g>
         )
       })}
 
-      {/* Curve labels (positioned at N=32 on each curve) */}
-      {curves.map((curve, ci) => {
-        const labelN = 20
-        const s = amdahlSpeedup(curve.p, labelN)
-        const lx = toX(labelN)
-        const ly = toY(s)
-        const textWidth = curve.p === 0.95 ? 175 : 100
+      {/* Curve end-labels */}
+      {curves.map((c, ci) => {
+        const endS = Math.min(amdahlSpeedup(c.s, MAX_N), MAX_Y)
+        const ex = toX(MAX_N)
+        const ey = toY(endS)
 
         return (
-          <motion.g
-            key={`label-${curve.p}`}
+          <motion.text
+            key={`lbl-${c.s}`}
+            x={ex - 8} y={ey - 8}
+            textAnchor="end"
+            style={{ fontSize: 9, fontFamily: 'Inter, sans-serif', fontWeight: c.s === 0.05 ? 700 : 500 }}
+            className={c.s === 0.05 ? 'fill-[#111]' : 'fill-[#999]'}
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.5, delay: 2 + ci * 0.3 }}
+            transition={{ duration: 0.4, delay: 2 + ci * 0.2 }}
           >
-            <rect
-              x={lx - textWidth / 2}
-              y={curve.p === 0.95 ? ly - 26 : ly + 8}
-              width={textWidth}
-              height={20}
-              rx={4}
-              fill={curve.p === 0.95 ? '#111' : '#e5e7eb'}
-            />
-            <text
-              x={lx}
-              y={curve.p === 0.95 ? ly - 12 : ly + 22}
-              textAnchor="middle"
-              fill={curve.p === 0.95 ? 'white' : '#666'}
-              style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
-            >
-              {curve.label}
-            </text>
-          </motion.g>
+            {c.label}
+          </motion.text>
         )
       })}
 
-      {/* Annotation arrow showing the "ceiling" concept */}
-      <motion.g
+      {/* Annotation: plateau formula */}
+      <motion.text
+        x={PADDING.left + 10} y={PADDING.top + 14}
+        className="fill-[#999]"
+        style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', fontStyle: 'italic' }}
         initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.6, delay: 2.8 }}
+        animate={isInView ? { opacity: 0.7 } : { opacity: 0 }}
+        transition={{ duration: 0.5, delay: 2.8 }}
       >
-        {/* Bracket between the two ceilings on the right side */}
-        <line x1={PADDING.left + PLOT_W - 20} y1={toY(2) - 2} x2={PADDING.left + PLOT_W - 20} y2={toY(20) + 2} stroke="#111" strokeWidth={1.5} />
-        <line x1={PADDING.left + PLOT_W - 24} y1={toY(2) - 2} x2={PADDING.left + PLOT_W - 16} y2={toY(2) - 2} stroke="#111" strokeWidth={1.5} />
-        <line x1={PADDING.left + PLOT_W - 24} y1={toY(20) + 2} x2={PADDING.left + PLOT_W - 16} y2={toY(20) + 2} stroke="#111" strokeWidth={1.5} />
-      </motion.g>
+        Ceiling = 1 / serial fraction
+      </motion.text>
     </svg>
   )
 }
@@ -796,7 +763,7 @@ export default function Home() {
               </div>
               <AmdahlChart />
               <p className="text-[11px] text-[#999] text-center mt-3">
-                The bigger the bottleneck you solve, the greater the productivity gain.
+                The fastest way to increase throughput isn't adding more parallel effort. It's reducing the serial work that caps everything.
               </p>
             </motion.div>
 
@@ -807,22 +774,22 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h3 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 uppercase">
-                The bottleneck defines your speed
+                More resources don't help if the serial work stays the same
               </h3>
               <p className="text-base sm:text-lg text-[#666] leading-relaxed mb-6">
-                Amdahl's Law is a simple idea: no matter how many people or tools you add, the overall speed of any process is limited by its slowest, most repetitive bottleneck.
+                Amdahl's Law says that adding more people or tools only speeds up the parts of work that can be done in parallel. The overall process is still capped by the part that must be done sequentially: the serial work.
               </p>
               <p className="text-base sm:text-lg text-[#666] leading-relaxed mb-6">
-                In government, that bottleneck is clear. Agencies spend thousands of hours assembling the same types of reports every cycle: financial forecasts, performance analyses, retention reviews. The work is critical, but the process is repetitive.
+                In government, that serial work is often the same step every cycle: assembling context, writing narrative justifications, and producing defensible, auditable reports. You can add more analysts, but you still wait on the drafting and citation step.
               </p>
               <p className="text-base sm:text-lg text-[#111] leading-relaxed font-semibold mb-8">
-                Amdahl removes that bottleneck. We automate the repetitive so your team can focus on what actually requires human judgment: strategy, decisions, and impact.
+                Amdahl reduces the serial fraction. We automate the repetitive report assembly so teams get real speedups, not just more parallel effort. Humans focus on judgment: strategy, decisions, and tradeoffs.
               </p>
 
               <div className="space-y-4">
                 {[
-                  'Same deliverables, fraction of the time',
-                  'AI handles the repeatable; humans handle the strategic',
+                  'Same deliverables, less serial work',
+                  'AI does the repetitive assembly; humans do the judgment',
                   'Every output citation-backed and auditable'
                 ].map((item, index) => (
                   <motion.div
