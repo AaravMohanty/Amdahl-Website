@@ -11,10 +11,10 @@ const amdahlSpeedup = (serial: number, n: number) => 1 / (serial + (1 - serial) 
 
 // Four curves showing different serial fractions
 const curves = [
-  { s: 0.40, label: '40% serial', color: '#d1d5db', maxS: 2.5 },
-  { s: 0.20, label: '20% serial', color: '#9ca3af', maxS: 5 },
-  { s: 0.10, label: '10% serial', color: '#6b7280', maxS: 10 },
-  { s: 0.05, label: '5% serial', color: '#111', maxS: 20 },
+  { s: 0.40, label: '40% manual', color: '#d1d5db', maxS: 2.5 },
+  { s: 0.20, label: '20% manual', color: '#9ca3af', maxS: 5 },
+  { s: 0.10, label: '10% manual', color: '#6b7280', maxS: 10 },
+  { s: 0.05, label: '5% manual', color: '#111', maxS: 20 },
 ]
 
 const CHART_W = 540
@@ -175,7 +175,7 @@ const AmdahlChart = () => {
         animate={isInView ? { opacity: 0.7 } : { opacity: 0 }}
         transition={{ duration: 0.5, delay: 2.8 }}
       >
-        Ceiling = 1 / serial fraction
+        Ceiling = 1 / manual fraction
       </motion.text>
     </svg>
   )
@@ -763,7 +763,7 @@ export default function Home() {
               </div>
               <AmdahlChart />
               <p className="text-[11px] text-[#999] text-center mt-3">
-                The fastest way to increase throughput isn't adding more parallel effort. It's reducing the serial work that caps everything.
+                The fastest way to increase throughput isn't adding more people. It's reducing the manual work that caps everything.
               </p>
             </motion.div>
 
@@ -774,21 +774,21 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h3 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 uppercase">
-                More resources don't help if the serial work stays the same
+                More resources don't help if the manual work stays the same
               </h3>
               <p className="text-base sm:text-lg text-[#666] leading-relaxed mb-6">
-                Amdahl's Law says that adding more people or tools only speeds up the parts of work that can be done in parallel. The overall process is still capped by the part that must be done sequentially: the serial work.
+                Amdahl's Law says that adding more people or tools only speeds up the parts of work that can run at the same time. The overall process is still capped by the part that has to be done manually, step by step.
               </p>
               <p className="text-base sm:text-lg text-[#666] leading-relaxed mb-6">
-                In government, that serial work is often the same step every cycle: assembling context, writing narrative justifications, and producing defensible, auditable reports. You can add more analysts, but you still wait on the drafting and citation step.
+                In government, that manual work is often the same step every cycle: assembling context, writing narrative justifications, and producing defensible, auditable reports. You can hire more analysts, but everyone still waits on the drafting and citation step.
               </p>
               <p className="text-base sm:text-lg text-[#111] leading-relaxed font-semibold mb-8">
-                Amdahl reduces the serial fraction. We automate the repetitive report assembly so teams get real speedups, not just more parallel effort. Humans focus on judgment: strategy, decisions, and tradeoffs.
+                Amdahl shrinks the manual portion. We automate the repetitive report assembly so teams get real speedups, not just more headcount. Humans focus on judgment: strategy, decisions, and tradeoffs.
               </p>
 
               <div className="space-y-4">
                 {[
-                  'Same deliverables, less serial work',
+                  'Same deliverables, less manual work',
                   'AI does the repetitive assembly; humans do the judgment',
                   'Every output citation-backed and auditable'
                 ].map((item, index) => (
