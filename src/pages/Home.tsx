@@ -23,9 +23,9 @@ const curvesConfig = [
   { p: 0.95, label: '95%', color: '#111' },
 ]
 
-const CHART_W = 500
+const CHART_W = 520
 const CHART_H = 320
-const PADDING = { top: 30, right: 70, bottom: 50, left: 60 }
+const PADDING = { top: 30, right: 75, bottom: 50, left: 80 }
 const PLOT_W = CHART_W - PADDING.left - PADDING.right
 const PLOT_H = CHART_H - PADDING.top - PADDING.bottom
 const MAX_N = 64
@@ -38,13 +38,34 @@ const AmdahlChart = () => {
   const ref = useRef<SVGSVGElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
+  // Build the filled area path for the 95% curve
+  const fillPoints = generateCurvePoints(0.95, MAX_N, 80)
+  const fillD =
+    fillPoints
+      .map((pt, i) => {
+        const x = toSvgX(pt.x)
+        const y = toSvgY(Math.min(pt.y, MAX_S))
+        return `${i === 0 ? 'M' : 'L'}${x},${y}`
+      })
+      .join(' ') +
+    ` L${toSvgX(MAX_N)},${toSvgY(1)} L${toSvgX(1)},${toSvgY(1)} Z`
+
   return (
     <svg
       ref={ref}
       viewBox={`0 0 ${CHART_W} ${CHART_H}`}
       className="w-full h-auto"
-      style={{ maxWidth: 560 }}
+      style={{ maxWidth: 580 }}
     >
+      {/* Subtle fill under 95% curve */}
+      <motion.path
+        d={fillD}
+        fill="#111"
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 0.04 } : { opacity: 0 }}
+        transition={{ duration: 1.5, delay: 0.8 }}
+      />
+
       {/* Grid lines */}
       {[1, 5, 10, 15, 20].map((s) => (
         <g key={`grid-${s}`}>
@@ -58,13 +79,13 @@ const AmdahlChart = () => {
             strokeDasharray={s === 1 ? '0' : '4 4'}
           />
           <text
-            x={PADDING.left - 10}
+            x={PADDING.left - 12}
             y={toSvgY(s) + 4}
             textAnchor="end"
-            className="fill-[#999] text-[11px]"
+            className="fill-[#999]"
             style={{ fontSize: 11, fontFamily: 'Inter, sans-serif' }}
           >
-            {s}×
+            {s}x
           </text>
         </g>
       ))}
@@ -74,32 +95,34 @@ const AmdahlChart = () => {
         <text
           key={`xlabel-${n}`}
           x={toSvgX(n)}
-          y={PADDING.top + PLOT_H + 28}
+          y={PADDING.top + PLOT_H + 24}
           textAnchor="middle"
-          className="fill-[#999] text-[11px]"
+          className="fill-[#999]"
           style={{ fontSize: 11, fontFamily: 'Inter, sans-serif' }}
         >
-          {n}
+          {n === 1 ? '1' : `${n}`}
         </text>
       ))}
 
-      {/* Axis labels */}
+      {/* X-axis label */}
       <text
-        x={CHART_W / 2}
+        x={PADDING.left + PLOT_W / 2}
         y={CHART_H - 4}
         textAnchor="middle"
-        className="fill-[#666] font-medium"
-        style={{ fontSize: 12, fontFamily: 'Inter, sans-serif' }}
+        className="fill-[#666]"
+        style={{ fontSize: 12, fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
       >
-        Parallel Resources (N)
+        Resources Added
       </text>
+
+      {/* Y-axis label */}
       <text
-        x={16}
-        y={PADDING.top + PLOT_H / 2}
+        x={0}
+        y={0}
         textAnchor="middle"
-        className="fill-[#666] font-medium"
-        style={{ fontSize: 12, fontFamily: 'Inter, sans-serif', writingMode: 'vertical-rl' }}
-        transform={`rotate(-90, 16, ${PADDING.top + PLOT_H / 2})`}
+        className="fill-[#666]"
+        style={{ fontSize: 12, fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+        transform={`translate(20, ${PADDING.top + PLOT_H / 2}) rotate(-90)`}
       >
         Speedup
       </text>
@@ -134,7 +157,7 @@ const AmdahlChart = () => {
           })
           .join(' ')
         const lastPt = points[points.length - 1]
-        const labelX = toSvgX(lastPt.x) + 6
+        const labelX = toSvgX(lastPt.x) + 8
         const labelY = toSvgY(Math.min(lastPt.y, MAX_S))
 
         return (
