@@ -11,8 +11,8 @@ const amdahlSpeedup = (p: number, n: number) => 1 / ((1 - p) + p / n)
 
 // Two curves to tell the story simply
 const curves = [
-  { p: 0.50, label: 'Small bottleneck improved', color: '#ccc', ceiling: 2 },
-  { p: 0.95, label: 'Major bottleneck improved (gov reports)', color: '#111', ceiling: 20 },
+  { p: 0.50, label: 'Minor bottleneck', color: '#ccc', ceiling: 2 },
+  { p: 0.95, label: 'Gov reports (major bottleneck)', color: '#111', ceiling: 20 },
 ]
 
 const CHART_W = 520
@@ -169,7 +169,7 @@ const AmdahlChart = () => {
         const s = amdahlSpeedup(curve.p, labelN)
         const lx = toX(labelN)
         const ly = toY(s)
-        const textWidth = curve.p === 0.95 ? 155 : 130
+        const textWidth = curve.p === 0.95 ? 175 : 100
 
         return (
           <motion.g
