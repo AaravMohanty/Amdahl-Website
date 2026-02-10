@@ -1,6 +1,171 @@
 import { useState } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, BookOpen, Clock, Database, Zap, Lock, Sparkles, Menu, X } from 'lucide-react'
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from 'framer-motion'
+import { ArrowRight, Check, Shield, FileText, Search, BarChart3, FileCheck, BookOpen, Clock, Database, Zap, Lock, Sparkles, Menu, X, TrendingUp } from 'lucide-react'
+import { useRef } from 'react'
+
+// Amdahl's Law speedup curve data generator
+const amdahlSpeedup = (p: number, n: number) => 1 / ((1 - p) + p / n)
+
+const generateCurvePoints = (p: number, maxN: number, steps: number) => {
+  const points: { x: number; y: number }[] = []
+  for (let i = 0; i <= steps; i++) {
+    const n = 1 + (maxN - 1) * (i / steps)
+    const s = amdahlSpeedup(p, n)
+    points.push({ x: n, y: s })
+  }
+  return points
+}
+
+const curvesConfig = [
+  { p: 0.5, label: '50%', color: '#d1d5db' },
+  { p: 0.75, label: '75%', color: '#9ca3af' },
+  { p: 0.9, label: '90%', color: '#6b7280' },
+  { p: 0.95, label: '95%', color: '#111' },
+]
+
+const CHART_W = 500
+const CHART_H = 320
+const PADDING = { top: 30, right: 70, bottom: 50, left: 60 }
+const PLOT_W = CHART_W - PADDING.left - PADDING.right
+const PLOT_H = CHART_H - PADDING.top - PADDING.bottom
+const MAX_N = 64
+const MAX_S = 20
+
+const toSvgX = (n: number) => PADDING.left + ((n - 1) / (MAX_N - 1)) * PLOT_W
+const toSvgY = (s: number) => PADDING.top + PLOT_H - ((s - 1) / (MAX_S - 1)) * PLOT_H
+
+const AmdahlChart = () => {
+  const ref = useRef<SVGSVGElement>(null)
+  const isInView = useInView(ref, { once: true, margin: '-100px' })
+
+  return (
+    <svg
+      ref={ref}
+      viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+      className="w-full h-auto"
+      style={{ maxWidth: 560 }}
+    >
+      {/* Grid lines */}
+      {[1, 5, 10, 15, 20].map((s) => (
+        <g key={`grid-${s}`}>
+          <line
+            x1={PADDING.left}
+            y1={toSvgY(s)}
+            x2={PADDING.left + PLOT_W}
+            y2={toSvgY(s)}
+            stroke="#e5e7eb"
+            strokeWidth={1}
+            strokeDasharray={s === 1 ? '0' : '4 4'}
+          />
+          <text
+            x={PADDING.left - 10}
+            y={toSvgY(s) + 4}
+            textAnchor="end"
+            className="fill-[#999] text-[11px]"
+            style={{ fontSize: 11, fontFamily: 'Inter, sans-serif' }}
+          >
+            {s}×
+          </text>
+        </g>
+      ))}
+
+      {/* X-axis labels */}
+      {[1, 16, 32, 48, 64].map((n) => (
+        <text
+          key={`xlabel-${n}`}
+          x={toSvgX(n)}
+          y={PADDING.top + PLOT_H + 28}
+          textAnchor="middle"
+          className="fill-[#999] text-[11px]"
+          style={{ fontSize: 11, fontFamily: 'Inter, sans-serif' }}
+        >
+          {n}
+        </text>
+      ))}
+
+      {/* Axis labels */}
+      <text
+        x={CHART_W / 2}
+        y={CHART_H - 4}
+        textAnchor="middle"
+        className="fill-[#666] font-medium"
+        style={{ fontSize: 12, fontFamily: 'Inter, sans-serif' }}
+      >
+        Parallel Resources (N)
+      </text>
+      <text
+        x={16}
+        y={PADDING.top + PLOT_H / 2}
+        textAnchor="middle"
+        className="fill-[#666] font-medium"
+        style={{ fontSize: 12, fontFamily: 'Inter, sans-serif', writingMode: 'vertical-rl' }}
+        transform={`rotate(-90, 16, ${PADDING.top + PLOT_H / 2})`}
+      >
+        Speedup
+      </text>
+
+      {/* X axis line */}
+      <line
+        x1={PADDING.left}
+        y1={PADDING.top + PLOT_H}
+        x2={PADDING.left + PLOT_W}
+        y2={PADDING.top + PLOT_H}
+        stroke="#ccc"
+        strokeWidth={1.5}
+      />
+      {/* Y axis line */}
+      <line
+        x1={PADDING.left}
+        y1={PADDING.top}
+        x2={PADDING.left}
+        y2={PADDING.top + PLOT_H}
+        stroke="#ccc"
+        strokeWidth={1.5}
+      />
+
+      {/* Curves */}
+      {curvesConfig.map((curve) => {
+        const points = generateCurvePoints(curve.p, MAX_N, 80)
+        const d = points
+          .map((pt, i) => {
+            const x = toSvgX(pt.x)
+            const y = toSvgY(Math.min(pt.y, MAX_S))
+            return `${i === 0 ? 'M' : 'L'}${x},${y}`
+          })
+          .join(' ')
+        const lastPt = points[points.length - 1]
+        const labelX = toSvgX(lastPt.x) + 6
+        const labelY = toSvgY(Math.min(lastPt.y, MAX_S))
+
+        return (
+          <g key={curve.label}>
+            <motion.path
+              d={d}
+              fill="none"
+              stroke={curve.color}
+              strokeWidth={curve.p === 0.95 ? 3 : 2}
+              strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
+              transition={{ duration: 1.8, delay: curve.p * 0.5, ease: 'easeOut' }}
+            />
+            <motion.text
+              x={labelX}
+              y={labelY + 4}
+              style={{ fontSize: 11, fontFamily: 'Inter, sans-serif', fontWeight: curve.p === 0.95 ? 700 : 500 }}
+              className={curve.p === 0.95 ? 'fill-[#111]' : 'fill-[#999]'}
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: curve.p * 0.5 + 1.5 }}
+            >
+              {curve.label}
+            </motion.text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
 
 // Floating Orb component for hero background
 const FloatingOrb = ({
@@ -117,6 +282,10 @@ export default function Home() {
             Process
             <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#111] group-hover:w-full transition-all duration-300" />
           </a>
+          <a href="#why-amdahl" className="hover:text-[#111] transition-colors duration-300 relative group">
+            Why Amdahl
+            <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#111] group-hover:w-full transition-all duration-300" />
+          </a>
           <a href="#security" className="hover:text-[#111] transition-colors duration-300 relative group">
             Security
             <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#111] group-hover:w-full transition-all duration-300" />
@@ -169,6 +338,13 @@ export default function Home() {
                 Process
               </a>
               <a
+                href="#why-amdahl"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-3 px-4 text-sm font-medium uppercase tracking-wide hover:bg-gray-100 transition-colors rounded-lg"
+              >
+                Why Amdahl
+              </a>
+              <a
                 href="#security"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="py-3 px-4 text-sm font-medium uppercase tracking-wide hover:bg-gray-100 transition-colors rounded-lg"
@@ -210,7 +386,7 @@ export default function Home() {
                 <div className="w-12 h-px bg-[#111]" />
                 <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#666] flex items-center gap-2">
                   <Sparkles className="w-3 h-3" />
-                  Consulting as Software
+                  Automating redundant government paperwork with AI
                 </span>
               </motion.div>
 
@@ -541,6 +717,92 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why Amdahl — Amdahl's Law Section */}
+      <section id="why-amdahl" className="relative z-10 px-4 sm:px-8 lg:px-16 py-16 sm:py-24 bg-white border-t-2 border-[#e0e0e0]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mb-8 sm:mb-16"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-8 sm:w-12 h-px bg-[#111]" />
+              <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#666]">Our Namesake</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight uppercase">
+              Why Amdahl
+            </h2>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+            {/* Chart */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-[#fafafa] border-2 border-[#e0e0e0] p-4 sm:p-8"
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-5 h-5 text-[#111]" />
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#666]">Amdahl's Law</span>
+              </div>
+              <AmdahlChart />
+              <div className="flex flex-wrap gap-4 mt-4 justify-center">
+                {curvesConfig.map((c) => (
+                  <div key={c.label} className="flex items-center gap-2">
+                    <div className="w-5 h-0.5" style={{ background: c.color }} />
+                    <span className="text-[11px] text-[#666] font-medium">{c.label} parallelizable</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Explanation */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 uppercase">
+                The bottleneck defines your speed
+              </h3>
+              <p className="text-base sm:text-lg text-[#666] leading-relaxed mb-6">
+                Amdahl's Law is a simple idea: no matter how many people or tools you add, the overall speed of any process is limited by its slowest, most repetitive bottleneck.
+              </p>
+              <p className="text-base sm:text-lg text-[#666] leading-relaxed mb-6">
+                In government, that bottleneck is clear. Agencies spend thousands of hours assembling the same types of reports every cycle: financial forecasts, performance analyses, retention reviews. The work is critical, but the process is repetitive.
+              </p>
+              <p className="text-base sm:text-lg text-[#111] leading-relaxed font-semibold mb-8">
+                Amdahl removes that bottleneck. We automate the repetitive so your team can focus on what actually requires human judgment: strategy, decisions, and impact.
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  'Same deliverables, fraction of the time',
+                  'AI handles the repeatable; humans handle the strategic',
+                  'Every output citation-backed and auditable'
+                ].map((item, index) => (
+                  <motion.div
+                    key={item}
+                    className="flex items-center gap-3"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <div className="w-5 h-5 bg-[#111] rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-[#666] uppercase tracking-wide text-sm">{item}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Security Section */}
       <section id="security" className="relative z-10 bg-[#111] text-white py-16 sm:py-24 lg:py-32 overflow-hidden">
         {/* Grid overlay */}
@@ -571,12 +833,12 @@ export default function Home() {
                 <br />infrastructure
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-[#888] leading-relaxed mb-6 sm:mb-8">
-                Deployed entirely within your Microsoft 365 and Azure environment.
+                Deployed on Azure Government and AWS GovCloud.
                 Zero external dependencies. Complete data sovereignty.
               </p>
               <div className="space-y-4">
                 {[
-                  'Runs in your Azure environment',
+                  'Azure Government & AWS GovCloud',
                   'Secure API integrations',
                   'Every output citation-backed',
                   'Human review before delivery'
