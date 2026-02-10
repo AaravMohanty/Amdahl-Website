@@ -567,7 +567,7 @@ export default function Home() {
                   <div>
                     <div className="text-xl sm:text-3xl font-bold tracking-tight">Your</div>
                     <div className="text-xl sm:text-3xl font-bold tracking-tight text-[#666]">Cloud</div>
-                    <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[#666] mt-1">Zero External APIs</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[#666] mt-1">Secure Connections</div>
                   </div>
                 </motion.div>
 
