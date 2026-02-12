@@ -225,6 +225,7 @@ export default function Home() {
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
@@ -233,9 +234,26 @@ export default function Home() {
     e.preventDefault()
     if (!email) return
     setIsSubmitting(true)
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setIsSuccess(true)
-    setIsSubmitting(false)
+    setErrorMsg('')
+
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Something went wrong. Please try again.')
+      }
+
+      setIsSuccess(true)
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const workflowSteps = [
@@ -487,6 +505,15 @@ export default function Home() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+                {errorMsg && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 text-sm text-red-600 font-medium"
+                  >
+                    {errorMsg}
+                  </motion.p>
+                )}
               </form>
             </motion.div>
 
